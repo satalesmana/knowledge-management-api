@@ -85,51 +85,6 @@ class Api extends CI_Controller {
 	}
 
 
-	public function getpesanan(){
-//	    header("Access-Control-Allow-Origin: *");
-//header("Access-Control-Allow-Methods: GET, POST");
-		$request	= json_decode(file_get_contents('php://input'),true);
-		$filter 	= array();
-		$this->load->model('Api_model','modapi');
-		$data 		=[];
-
-		if($request !=''){
-			$filter=['h.idPesan'=>$request['id']];
-		}
-
-		$data = $this->modapi->get_trans('uas_pesananheader h',
-			array('h.*','p.NamaPelanggan'),
-			array(
-				['table'=>'uas_pesanandetail d','key'=>'h.idPesan=d.pesananid'],
-				['table'=>'uas_pelanggan p','key'=>'h.idPelanggan=p.pelangganId']
-			),$filter,'h.idPesan'
-		);
-
-		if($request !=''){
-			$data['item_pesanan'] = $this->modapi->get_trans('uas_pesanandetail d',
-				array('d.*','b.NamaBarang','b.Harga as harga_satuan'),
-				array(
-					['table'=>'uas_barang b','key'=>'d.barangId=b.idBarang']
-				),
-				array('d.pesananid'=>$request['id'])
-			);
-		}
-		
-		echo $this->messages('200','',$data);
-	}
-
-	public function submittrans(){
-	    header("Access-Control-Allow-Origin: *");
-		header("Access-Control-Allow-Methods: GET, POST");
-		$request  = json_decode(file_get_contents('php://input'),true);
-		
-		$this->load->model('Api_model','mod_tugas');
-		$this->mod_tugas->add($request,'uas_pembayaran');
-
-		echo $this->messages('200','Data berhasil disimpan');
-	}
-
-
 	private function get_validation($table='',$status=true,$messages =''){
 		do{
 			if($table==''){
@@ -148,7 +103,7 @@ class Api extends CI_Controller {
 	private function add_validation($request, $messages = '', $status=true){
 		$messages 	='Invalid Post data Format';
 		$table 	    = $this->uri->segment(3);
-		$table_avl  = ['oop_tugas','buku','uas_pembayaran','uas_barang','member','article'];
+		$table_avl  = ['member'];
 		do{
 			if($table==''){
 				$messages = 'No Segment table';
