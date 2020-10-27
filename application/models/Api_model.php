@@ -16,9 +16,12 @@ class Api_model extends CI_Model
             return false;
     }
 
-    public function get($table=''){
+    public function get($table='',$filter=[]){
         if($table !='')
             $this->table = $table;
+
+        if(count($filter)>0)
+            $this->db->where($filter);
 
         $res = $this->db->get($this->table);
         return $res->result();

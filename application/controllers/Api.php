@@ -38,6 +38,22 @@ class Api extends CI_Controller {
 
 	}
 
+	public function getlist(){
+		header("Access-Control-Allow-Origin: *");
+		header("Access-Control-Allow-Methods: GET, POST");
+		$table		= $this->uri->segment(3);
+		$validate = $this->get_validation($table);
+		$request	= json_decode(file_get_contents('php://input'),true);
+
+		if($validate==false){
+			$this->load->model('Api_model');
+			$data = $this->Api_model->get($table,$request);
+			echo $this->messages('200','',$data);
+		}else{
+			echo $validate;
+		}
+	}
+
 	public function edit(){
 	    header("Access-Control-Allow-Origin: *");
 		header("Access-Control-Allow-Methods: GET, POST");
@@ -103,7 +119,7 @@ class Api extends CI_Controller {
 	private function add_validation($request, $messages = '', $status=true){
 		$messages 	='Invalid Post data Format';
 		$table 	    = $this->uri->segment(3);
-		$table_avl  = ['member'];
+		$table_avl  = ['member','knowledge'];
 		do{
 			if($table==''){
 				$messages = 'No Segment table';
